@@ -11941,15 +11941,9 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
     }
 
     private void checkForIdentifierDisclosureNotificationSupport() {
-        if (getHalVersion(HAL_SERVICE_NETWORK) < MIN_IDENTIFIER_DISCLOSURE_VERSION) {
-            throw new UnsupportedOperationException(
-                    "Cellular identifier disclosure transparency operations require HAL 2.2 or "
-                            + "above");
-        }
-        if (!getDefaultPhone().isIdentifierDisclosureTransparencySupported()) {
-            throw new UnsupportedOperationException(
-                    "Cellular identifier disclosure transparency operations unsupported by modem");
-        }
+        throw new UnsupportedOperationException(
+                "Cellular identifier disclosure transparency operations require HAL 2.2 or "
+                        + "above");
     }
 
     /**
@@ -12803,18 +12797,6 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
      */
     @RequiresPermission(Manifest.permission.MODIFY_PHONE_STATE)
     public void enableCellularIdentifierDisclosureNotifications(boolean enable) {
-        enforceModifyPermission();
-        checkForIdentifierDisclosureNotificationSupport();
-
-        SharedPreferences.Editor editor = mTelephonySharedPreferences.edit();
-        editor.putBoolean(Phone.PREF_IDENTIFIER_DISCLOSURE_NOTIFICATIONS_ENABLED, enable);
-        editor.apply();
-
-        // Each phone instance is responsible for updating its respective modem immediately
-        // after we've made a preference change.
-        for (Phone phone : PhoneFactory.getPhones()) {
-            phone.handleIdentifierDisclosureNotificationPreferenceChange();
-        }
     }
 
     /**
@@ -12825,9 +12807,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
      */
     @RequiresPermission(Manifest.permission.READ_PRIVILEGED_PHONE_STATE)
     public boolean isCellularIdentifierDisclosureNotificationEnabled() {
-        enforceReadPrivilegedPermission("isCellularIdentifierDisclosureNotificationEnabled");
-        checkForIdentifierDisclosureNotificationSupport();
-        return getDefaultPhone().getIdentifierDisclosureNotificationsPreferenceEnabled();
+        return false;
     }
 
     /**
